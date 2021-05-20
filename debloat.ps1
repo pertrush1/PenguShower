@@ -1608,8 +1608,6 @@ $packages = @(
 
 )
 
-iwr -useb get.scoop.sh | iex -ErrorAction SilentlyContinue
-
 scoop install git -g
 scoop install aria2 -g
 
