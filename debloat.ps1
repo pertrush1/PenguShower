@@ -1,4 +1,3 @@
-
 $ErrorActionPreference= 'silentlycontinue'
 
 ls -Recurse *.ps*1 | Unblock-File -ErrorAction SilentlyContinue
