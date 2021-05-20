@@ -1,3 +1,5 @@
+#Windows Debloater
+
 $ErrorActionPreference= 'silentlycontinue'
 $old_erroractionpreference = $erroractionpreference
 ls -Recurse *.ps*1 | Unblock-File -ErrorAction SilentlyContinue
