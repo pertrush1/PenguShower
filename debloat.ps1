@@ -1427,3 +1427,98 @@ Remove-Item -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\E
 #New-FolderForced -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications"
 #sp "HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications" "NoTileApplicationNotification" 1
 Start-Process "Explorer.exe" -Wait
+iwr -useb get.scoop.sh | iex
+#   Description:
+# This script will use Windows package manager to bootstrap Scoop and
+# install a list of packages. Script will also install Sysinternals Utilities
+# into your default drive's root directory.
+
+$packages = @(
+    "7zip"
+    "audacity"
+    "putty"
+    #"python"
+    "qbittorrent"
+    "vlc"
+    "windirstat"
+    "wireshark"
+    "discord"
+    "dnspy"
+    "firefox-developer"
+    "ilspy"
+    "steam"
+    "teamviewer"
+    #"geforce-experience"
+    "hxd"
+    "obs"
+    "sysinternals"
+    "rufus"
+    #"dogtail.dotnet3.5sp1"
+    #"netfx-4.5.2-devpack"
+    #"dotnetcoresdk"
+    "dotnet"
+    "nirlauncher"
+    "bulk-crap-uninstaller"
+    #"jdk11"
+    #"jdk8"
+    "cutter"
+    #"treesizefree"
+    "nvidia-geforce-experience"
+    "dotnet-sdk"
+    "sublime-text"
+    "vscode"
+)
+
+
+
+scoop install git
+scoop install aria2
+
+scoop bucket add extras
+scoop bucket add nonportable
+scoop bucket add nirsoft
+scoop bucket add games
+scoop bucket add chadrien https://github.com/chadrien/scoop.git
+scoop bucket add Ash258 https://github.com/Ash258/Scoop-Ash258.git
+scoop bucket add scoop-java https://github.com/ScoopInstaller/Java
+
+
+echo "Creating daily task to automatically upgrade Scoop packages"
+# adapted from https://blogs.technet.microsoft.com/heyscriptingguy/2013/11/23/using-scheduled-tasks-and-scheduled-jobs-in-powershell/
+$ScheduledJob = @{
+    Name = "Scoop Daily Upgrade"
+    ScriptBlock = {scoop update *}
+    Trigger = New-JobTrigger -Daily -at 7pm
+    ScheduledJobOption = New-ScheduledJobOption -RunElevated -MultipleInstancePolicy StopExisting -RequireNetwork
+}
+Register-ScheduledJob @ScheduledJob
+
+$ScheduledJob = @{
+    Name = "Scoop Daily Upgrade"
+    ScriptBlock = {scoop update}
+    Trigger = New-JobTrigger -Daily -at 7pm
+    ScheduledJobOption = New-ScheduledJobOption -RunElevated -MultipleInstancePolicy StopExisting -RequireNetwork
+}
+Register-ScheduledJob @ScheduledJob
+
+echo "Installing Packages"
+$packages | %{scoop install $_ -g}
+
+
+
+
+
+echo "Installing Sysinternals Utilities to C:\Sysinternals"
+$download_uri = "https://download.sysinternals.com/files/SysinternalsSuite.zip"
+$wc = new-object net.webclient
+$wc.DownloadFile($download_uri, "/SysinternalsSuite.zip")
+Add-Type -AssemblyName "system.io.compression.filesystem"
+[io.compression.zipfile]::ExtractToDirectory("/SysinternalsSuite.zip", "/Sysinternals")
+echo "Removing zipfile"
+rm "/SysinternalsSuite.zip"
+
+If ((Get-WmiObject -Class "Win32_OperatingSystem").Caption -like "*Server*") {
+	Install-WindowsFeature -Name "Hyper-V" -IncludeManagementTools -WarningAction SilentlyContinue | Out-Null
+} Else {
+	Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V-All" -NoRestart -WarningAction SilentlyContinue | Out-Null
+}
