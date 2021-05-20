@@ -147,7 +147,7 @@ function Elevate-Privileges {
 }
 
 
-do {} until (Elevate-Privileges SeTakeOwnershipPrivilege)
+#do {} until (Elevate-Privileges SeTakeOwnershipPrivilege)
 
 taskkill.exe /F /IM "explorer.exe"
 
