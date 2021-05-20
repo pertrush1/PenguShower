@@ -5,10 +5,8 @@ Write-Output "Terminal elevated"
 $ErrorActionPreference= 'silentlycontinue'
 
 #ls -Recurse *.ps*1 | Unblock-File -ErrorAction SilentlyContinue
-Set-ExecutionPolicy Unrestricted -Scope CurrentUser
 
-Set-ExecutionPolicy Unrestricted -Force
-Set-ExecutionPolicy Unrestricted -s cu -f
+Set-ExecutionPolicy Unrestricted -s cu -f -Scope CurrentUser
 Set-ItemProperty -Path REGISTRY::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System -Name ConsentPromptBehaviorAdmin -Value 0
 
 function New-FolderForced {
